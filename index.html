@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Katalon to Playwright | TestMu AI for TCS</title>
+<link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJnIiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjNWI1NGY1Ii8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjMTJiNWE2Ii8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iOSIgZmlsbD0idXJsKCNnKSIvPjxwYXRoIGQ9Ik05IDExaDE0TTE2IDExdjEzIiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iMy40IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48L3N2Zz4=">
+<style>
+:root{
+  --bg:#f6f7fb;--card:#ffffff;--ink:#11142a;--muted:#5d6478;--soft:#8a90a3;--line:#e4e7f0;--tint:#f0f1fb;
+  --a1:#5b54f5;--a2:#12b5a6;--grad:linear-gradient(120deg,#5b54f5 0%,#12b5a6 100%);
+  --ok:#15924a;--okbg:#e5f6ec;--bad:#d4372c;--badbg:#fdeceb;--warn:#b86e00;--warnbg:#fff3df;
+  --mono:ui-monospace,SFMono-Regular,"Cascadia Mono","JetBrains Mono",Menlo,Consolas,"Liberation Mono",monospace;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --r:16px;--shadow:0 1px 2px rgba(17,20,42,.04),0 8px 28px rgba(17,20,42,.07);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+a.btn{text-decoration:none;color:inherit}a.btn.primary{color:#fff}
+.mono{font-family:var(--mono)}
+/* top bar */
+.top{position:fixed;top:0;left:0;right:0;height:58px;display:flex;align-items:center;gap:18px;padding:0 20px;background:rgba(255,255,255,.86);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);z-index:20}
+.brand{display:flex;align-items:center;gap:10px;flex:none}
+.brand img{height:26px;display:block}
+.brand .tag{font:600 11px var(--mono);color:var(--muted);letter-spacing:.06em;text-transform:uppercase;border-left:1px solid var(--line);padding-left:10px}
+.rail{flex:1;display:flex;align-items:center;justify-content:center;gap:4px;min-width:0}
+.rail button{height:30px;min-width:30px;padding:0 9px;border-radius:999px;font:600 12px var(--mono);color:var(--soft);display:flex;align-items:center;gap:6px;transition:background .25s,color .25s}
+.rail button:hover{background:var(--tint);color:var(--ink)}
+.rail button .lbl{display:none;font-family:var(--sans);font-weight:600;font-size:12.5px;white-space:nowrap}
+.rail button.on{background:var(--ink);color:#fff}
+.rail button.on .lbl{display:inline}
+.rail button.seen:not(.on){color:var(--a1)}
+.tools{display:flex;gap:8px;flex:none}
+.btn{height:34px;padding:0 14px;border-radius:10px;border:1px solid var(--line);background:#fff;font-weight:600;font-size:13px;display:inline-flex;align-items:center;gap:7px;transition:border-color .2s,background .2s}
+.btn:hover{border-color:#c9cde0}
+.btn.on{background:var(--tint);border-color:#c8c6fb;color:var(--a1)}
+.btn.primary{background:var(--grad);border:0;color:#fff}
+.btn svg{width:15px;height:15px}
+/* stage */
+.stage{position:fixed;top:58px;bottom:58px;left:0;right:0;display:flex}
+.viewport{position:relative;flex:1;overflow:hidden}
+.notes{width:0;overflow:hidden;background:#fff;border-left:1px solid var(--line);transition:width .3s ease;flex:none}
+.notes.open{width:360px}
+.notes .in{width:360px;padding:22px 22px;height:100%;overflow:auto}
+.notes h4{font:600 11px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--a1);margin-bottom:10px}
+.notes p,.notes li{font-size:13.5px;line-height:1.55;color:var(--ink);margin-bottom:8px}
+.notes ul{padding-left:18px}
+.notes .src{margin-top:14px;padding-top:12px;border-top:1px dashed var(--line);font-size:12px;color:var(--muted)}
+.notes .src b{font-family:var(--mono);font-weight:600;color:var(--ink);font-size:11.5px}
+.chapter{position:absolute;inset:0;display:none}
+.chapter.on{display:block}
+.chapter .note{display:none}
+.canvas{position:absolute;left:50%;top:50%;width:1200px;height:640px;transform-origin:center center;overflow:hidden;padding:18px 34px 0}
+.kicker{font:600 12.5px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--a1);display:flex;align-items:center;gap:10px}
+.kicker:before{content:"";width:22px;height:3px;border-radius:3px;background:var(--grad)}
+h1{font-size:35px;line-height:1.18;letter-spacing:-.02em;font-weight:750;margin-top:10px;white-space:nowrap}
+h1 em{font-style:normal;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{margin-top:8px;font-size:16.5px;color:var(--muted);max-width:900px;line-height:1.45}
+.visual{position:relative;margin-top:36px;height:470px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow)}
+.label{font:600 11px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--soft)}
+.badge{position:absolute;z-index:5;font:600 10.5px var(--mono);letter-spacing:.06em;text-transform:uppercase;padding:4px 9px;border-radius:999px;background:var(--warnbg);color:var(--warn);border:1px solid #f4d9a8}
+.badge.real{background:var(--okbg);color:var(--ok);border-color:#bfe5cd}
+.replay{position:absolute;z-index:6;right:0;bottom:6px;height:30px;padding:0 12px;border-radius:999px;background:#fff;border:1px solid var(--line);font:600 12px var(--mono);color:var(--muted);display:flex;align-items:center;gap:6px;box-shadow:var(--shadow)}
+.replay:hover{color:var(--a1);border-color:#c8c6fb}
+.fade{opacity:0;transform:translateY(8px);transition:opacity .7s ease,transform .7s ease}
+.fade.in{opacity:1;transform:none}
+.pill{display:inline-flex;align-items:center;gap:5px;font:600 11.5px var(--mono);padding:3px 9px;border-radius:999px}
+.pill.ok{background:var(--okbg);color:var(--ok)}
+.pill.bad{background:var(--badbg);color:var(--bad)}
+.pill.warn{background:var(--warnbg);color:var(--warn)}
+.pill.n{background:var(--tint);color:var(--muted)}
+/* bottom */
+.bottom{position:fixed;bottom:0;left:0;right:0;height:58px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;border-top:1px solid var(--line);background:rgba(255,255,255,.86);backdrop-filter:blur(8px);z-index:20}
+.bottom .where{font:600 12.5px var(--mono);color:var(--muted)}
+.bottom .where b{color:var(--ink)}
+.bottom .grp{display:flex;gap:8px}
+.wipe{position:fixed;top:58px;bottom:58px;left:0;right:0;background:var(--grad);z-index:15;pointer-events:none;clip-path:inset(0 0 0 100%)}
+/* code */
+.code{font:13px/1.7 var(--mono);color:#2b3050;white-space:pre}
+.code .ln{display:block;opacity:0;transform:translateX(-6px);transition:opacity .5s,transform .5s,background .4s;border-radius:6px;padding:0 8px}
+.code .ln.in{opacity:1;transform:none}
+.code .ln.hl{background:#ecebff}
+.k{color:#6b3fd6}.s{color:#0f8a6e}.c{color:#9aa0b2}.f{color:#2563c9}.n{color:#c2410c}
+/* terminal */
+.term{background:#14172b;border-radius:var(--r);color:#d7dbef;font:13px/1.65 var(--mono);box-shadow:var(--shadow);overflow:hidden}
+.term .bar{height:34px;display:flex;align-items:center;gap:7px;padding:0 14px;background:#1c2038;color:#7d84a6;font-size:11.5px}
+.term .bar i{width:10px;height:10px;border-radius:50%;background:#3a3f5e;display:inline-block}
+.term .body{padding:14px 18px}
+.term .g{color:#5ee0b2}.term .r{color:#ff8a80}.term .d{color:#7d84a6}.term .y{color:#ffd479}.term .p{color:#a9a4ff}
+/* hero */
+.hero h1{font-size:44px;margin-top:14px}
+.hero .sub{font-size:18px;max-width:820px}
+.hero .ctas{display:flex;gap:10px;margin-top:16px}
+.hero .ctas .btn{height:40px;padding:0 18px;font-size:14px}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="brand"><img alt="TestMu AI" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNTAiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAxNTAgMzIiPjxkZWZzPjxsaW5lYXJHcmFkaWVudCBpZD0iZyIgeDE9IjAiIHkxPSIwIiB4Mj0iMSIgeTI9IjEiPjxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iIzViNTRmNSIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzEyYjVhNiIvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHg9IjEiIHk9IjIiIHdpZHRoPSIyOCIgaGVpZ2h0PSIyOCIgcng9IjgiIGZpbGw9InVybCgjZykiLz48cGF0aCBkPSJNOSAxMWgxMk0xNSAxMXYxMiIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjMiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjx0ZXh0IHg9IjM4IiB5PSIyMiIgZm9udC1mYW1pbHk9IlNlZ29lIFVJLEhlbHZldGljYSxBcmlhbCxzYW5zLXNlcmlmIiBmb250LXNpemU9IjE3IiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSIjMTExNDJhIj5UZXN0TXU8L3RleHQ+PHRleHQgeD0iMTAwIiB5PSIyMiIgZm9udC1mYW1pbHk9IlNlZ29lIFVJLEhlbHZldGljYSxBcmlhbCxzYW5zLXNlcmlmIiBmb250LXNpemU9IjE3IiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSIjNWI1NGY1Ij5BSTwvdGV4dD48L3N2Zz4="><span class="tag">for TCS</span></div>
+  <nav class="rail" id="rail" aria-label="Chapters"></nav>
+  <div class="tools">
+    <button class="btn" id="detailsBtn" aria-pressed="false"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2" y="2.5" width="12" height="11" rx="2"/><path d="M5 6h6M5 9h4"/></svg>Details</button>
+    <button class="btn primary" id="presentBtn"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M2 6V2h4M14 6V2h-4M2 10v4h4M14 10v4h-4"/></svg><span>Present</span></button>
+  </div>
+</header>
+
+<main class="stage">
+<div class="viewport" id="viewport">
+
+<!-- 1 HERO -->
+<section class="chapter hero" id="hero" data-short="Start">
+<div class="canvas">
+  <div class="kicker">Framework migration for TCS</div>
+  <h1>Katalon in. <em>Playwright out.</em> Proven on LambdaTest.</h1>
+  <p class="sub">An AI conversion skill reads your Katalon runs on LambdaTest, writes a clean Playwright framework, and runs it on the same grid to prove nothing broke.</p>
+  <div class="ctas"><a class="btn primary" href="#commands">See the results</a><a class="btn" href="#convert">How it works</a></div>
+  <div class="visual" data-anim="hero" style="height:340px;margin-top:44px">
+    <style>
+      .hv{position:absolute;inset:0 0 40px 0;display:grid;grid-template-columns:1fr 170px 1fr;gap:0;align-items:center}
+      .hv .side{height:100%;padding:18px 20px;display:flex;flex-direction:column}
+      .hv .tn{font:600 14px var(--mono);margin-top:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:opacity .4s}
+      .hv .chips{flex:1;margin-top:12px;display:flex;flex-wrap:wrap;align-content:flex-start;gap:3px}
+      .hv .chips i{width:9px;height:9px;border-radius:2px;background:#cfd3e1;display:block;animation:pop .35s ease both}
+      .hv .chips i.e{background:var(--bad)}
+      .hv .chips.pw i{background:var(--a1)}
+      .hv .chips.pw i:nth-child(3n){background:var(--a2)}
+      @keyframes pop{from{transform:scale(0)}to{transform:scale(1)}}
+      .hv .stats{display:flex;gap:18px;align-items:baseline;border-top:1px solid var(--line);padding-top:10px}
+      .hv .stats b{font-size:24px;font-weight:750}
+      .hv .stats span{font:600 11px var(--mono);color:var(--soft);text-transform:uppercase;margin-left:4px}
+      .hv .mid{display:flex;flex-direction:column;align-items:center;gap:10px}
+      .hv .ring{width:96px;height:96px;border-radius:50%;background:conic-gradient(from 0deg,#5b54f5,#12b5a6,#5b54f5);display:grid;place-items:center;animation:spin 6s linear infinite}
+      .hv .ring div{width:80px;height:80px;border-radius:50%;background:#fff;display:grid;place-items:center;font:700 11px var(--mono);color:var(--a1);text-align:center;line-height:1.3}
+      @keyframes spin{to{transform:rotate(360deg)}}
+      .hv .ring div span{display:block;animation:spin 6s linear infinite reverse}
+      .hv .flow{font:600 11px var(--mono);color:var(--muted);text-align:center;min-height:30px}
+      .hv .res{margin-top:6px}
+      .hv .tot{position:absolute;left:0;right:0;bottom:0;display:flex;gap:10px;justify-content:center}
+    </style>
+    <span class="badge real" style="left:0;top:-28px">Real numbers, builds 112382179 and 112384971</span>
+    <div class="hv">
+      <div class="side card">
+        <div class="label">Katalon Studio · Selenium</div>
+        <div class="tn" id="hvK">File Upload</div>
+        <div class="chips" id="hvKc"></div>
+        <div class="stats"><div><b id="hvKn">0</b><span>commands</span></div><div><b id="hvKd">0s</b><span>run</span></div><div><b id="hvKe" style="color:var(--bad)">0</b><span>errors</span></div></div>
+      </div>
+      <div class="mid"><div class="ring"><div><span>AI<br>convert</span></div></div><div class="flow" id="hvF">reading run log</div></div>
+      <div class="side card">
+        <div class="label">Playwright · TypeScript</div>
+        <div class="tn" id="hvP">&nbsp;</div>
+        <div class="chips pw" id="hvPc"></div>
+        <div class="stats"><div><b id="hvPn">0</b><span>commands</span></div><div><b id="hvPd">0s</b><span>run</span></div><div class="res" id="hvPr"></div></div>
+      </div>
+    </div>
+    <div class="tot" id="hvT"></div>
+  </div>
+</div>
+<div class="note">
+  <h4>Presenter notes</h4>
+  <p>Open with the outcome: TCS keeps its Katalon test intent, gets a Playwright TypeScript framework, and sees proof on the same LambdaTest grid.</p>
+  <p>The preview cycles through the six real tests. Each square is one Katalon browser command; red squares are failed Katalon smart-wait calls (real count per test, positions spread evenly). The right side shows the Playwright command count for the same test.</p>
+  <div class="src">Sources: <b>migration-report.html</b> (per-test commands and durations, 18 Nov 2026), <b>build-112382179.html</b> (Katalon run; failed smart-waits per test: 5, 34, 7, 10, 11, 11 = 78), Playwright run is LambdaTest build 112384971.</div>
+</div>
+</section>
+
+<!-- 2 START -->
+<section class="chapter" id="baseline" data-short="Baseline">
+<div class="canvas">
+  <div class="kicker">The starting point</div>
+  <h1>Six Katalon tests, <em>all green</em> on LambdaTest.</h1>
+  <p class="sub">A real Katalon Studio project, Demo_Katalon_Project, running on the LambdaTest cloud grid.</p>
+  <div class="visual" data-anim="baseline">
+    <style>
+      .db{position:absolute;inset:0 0 44px 0;display:flex;flex-direction:column;overflow:hidden}
+      .db .hd{display:flex;align-items:center;justify-content:space-between;padding:16px 22px;border-bottom:1px solid var(--line)}
+      .db .hd h3{font-size:17px;font-weight:700}
+      .db .meta{display:flex;gap:6px;flex-wrap:wrap}
+      .db .tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:14px 22px}
+      .db .tile{background:var(--tint);border-radius:12px;padding:10px 14px}
+      .db .tile b{font-size:24px;font-weight:750;display:block}
+      .db table{width:calc(100% - 44px);margin:0 22px;border-collapse:collapse;font-size:13.5px}
+      .db th{text-align:left;font:600 10.5px var(--mono);letter-spacing:.07em;text-transform:uppercase;color:var(--soft);padding:7px 8px;border-bottom:1px solid var(--line)}
+      .db td{padding:8px 8px;border-bottom:1px solid var(--line)}
+      .db td.m{font-family:var(--mono);font-size:12.5px;color:var(--muted)}
+      .db tr.fade{transform:translateX(-8px)}
+      .db tr.fade.in{transform:none}
+    </style>
+    <span class="badge real" style="right:0;top:-28px">Recreated from build 112382179 report</span>
+    <div class="db card">
+      <div class="hd"><div><div class="label">LambdaTest Automation · build 112382179</div><h3>Katalon Demo Scripts</h3></div>
+        <div class="meta"><span class="pill n">Chrome 157</span><span class="pill n">Windows 11</span><span class="pill n">1920x1080</span><span class="pill n">Mumbai ap-south-1</span><span class="pill n">selenium/4.46.0 java</span></div></div>
+      <div class="tiles">
+        <div class="tile"><span class="label">Tests</span><b id="bT">0</b></div>
+        <div class="tile"><span class="label">Passed</span><b id="bP" style="color:var(--ok)">0</b></div>
+        <div class="tile"><span class="label">Build duration</span><b id="bD">0s</b></div>
+        <div class="tile"><span class="label">Browser commands</span><b id="bC">0</b></div>
+      </div>
+      <table><thead><tr><th>#</th><th>Test</th><th>Status</th><th>Start (UTC)</th><th>Duration</th><th>Commands</th></tr></thead><tbody id="bRows"></tbody></table>
+    </div>
+  </div>
+</div>
+<div class="note">
+  <h4>Presenter notes</h4>
+  <p>This is the baseline: a real Katalon project run on LambdaTest on 18 Nov 2026. Everything passes, which is exactly why nobody questions it.</p>
+  <p>Point at the command count: 534 browser commands for six short tests. That number matters in chapter 9.</p>
+  <div class="src">Source: <b>LambdaTest Reports/build-112382179.html</b>: 6 tests, 6 passed, 123s, 534 commands, Chrome 157.0.8103.78, Windows 11, Mumbai (ap-south-1), client selenium/4.46.0 (java windows), started 13:10:21 UTC, ended 13:13:26 UTC.</div>
+</div>
+</section>
+
+<!-- 3 HIDDEN -->
+<section class="chapter" id="hidden" data-short="Hidden cost">
+<div class="canvas">
+  <div class="kicker">Under the green</div>
+  <h1>A green build with <em>78 errors</em> underneath.</h1>
+  <p class="sub">The real command log for one Katalon test. Watch the red rows.</p>
+  <div class="visual" data-anim="hidden">
+    <style>
+      .lg{position:absolute;left:0;top:0;bottom:44px;width:770px;display:flex;flex-direction:column;overflow:hidden}
+      .lg .hd{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid var(--line)}
+      .lg .rows{flex:1;overflow:hidden;position:relative}
+      .lg .rows .wrap{position:absolute;left:0;right:0;bottom:0}
+      .lg .row{display:grid;grid-template-columns:34px 98px 128px 1fr 66px;gap:8px;padding:5px 16px;font:12.5px var(--mono);border-bottom:1px solid #f1f2f7;animation:rin .5s ease both}
+      .lg .row.e{background:var(--badbg);color:var(--bad)}
+      .lg .row .t{color:var(--soft)}
+      .lg .row .v{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--muted)}
+      .lg .row.e .v{color:var(--bad)}
+      @keyframes rin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+      .side3{position:absolute;right:0;top:0;width:350px;display:flex;flex-direction:column;gap:12px}
+      .side3 .card{padding:16px 18px}
+      .side3 b.big{font-size:40px;font-weight:780;color:var(--bad);display:block;line-height:1.1}
+      .side3 .why{font-size:14px;line-height:1.5}
+      .side3 .why code{font:12px var(--mono);background:var(--tint);padding:1px 5px;border-radius:5px}
+    </style>
+    <span class="badge real" style="left:0;top:-28px">Real log excerpt, build 112382179</span>
+    <div class="lg card">
+      <div class="hd"><span class="label">TC_CURA_Login_Parameterization - John Doe · 58 commands</span><span class="pill ok">passed</span></div>
+      <div class="rows"><div class="wrap" id="lgRows"></div></div>
+    </div>
+    <div class="side3">
+      <div class="card"><span class="label">Failed calls in this test</span><b class="big" id="lgE">0</b><span class="label">78 across the whole build</span></div>
+      <div class="card fade" id="lgWhy"><span class="label" style="color:var(--bad)">Why it fails</span>
+        <p class="why" style="margin-top:6px">Every step calls <code>window.katalonWaiter</code>, which is undefined on the page. The wait throws a 500 error and the test carries on, so it still reports passed.</p></div>
+      <div class="card fade" id="lgCost"><span class="label">What it costs</span><p class="why" style="margin-top:6px">Wasted round trips on every step and a log full of noise that hides real failures.</p></div>
+    </div>
+  </div>
+</div>
+<div class="note">
+  <h4>Presenter notes</h4>
+  <p>This is the actual Selenium log from LambdaTest. Each red row is <code>katalon_smart_waiter_do_ajax_wait</code> returning HTTP 500 with "Cannot read properties of undefined".</p>
+  <p>7 of the 58 commands in this test failed that way. Across the build, 78 errors were logged. Playwright has none because it waits for elements natively.</p>
+  <div class="src">Sources: <b>build-112382179.html</b> test 3 command log (rows 5 to 56, password field value masked here); <b>migration-report.html</b> "Errors logged during runs 78 to 0".</div>
+</div>
+</section>
+
+<!-- 4 CONVERT -->
+<section class="chapter" id="convert" data-short="How it works">
+<div class="canvas">
+  <div class="kicker">How it works</div>
+  <h1>One skill reads the run and <em>writes the framework.</em></h1>
+  <p class="sub">It starts from what actually ran on LambdaTest, not from a guess about what the scripts meant.</p>
+  <div class="visual" data-anim="convert">
+    <style>
+      .t4{position:absolute;left:0;top:0;bottom:44px;width:780px}
+      .t4 .body{height:calc(100% - 34px);overflow:hidden;position:relative}
+      .t4 .body .wrap{position:absolute;left:18px;right:18px;bottom:14px}
+      .t4 .l{white-space:pre;animation:rin .45s ease both}
+      .f4{position:absolute;right:0;top:0;width:360px;bottom:44px;padding:16px 18px}
+      .f4 .fl{font:12px/1 var(--mono);padding:5px 10px;border-radius:8px;display:flex;justify-content:space-between;color:var(--soft);transition:background .5s,color .5s}
+      .f4 .fl.on{background:var(--okbg);color:var(--ink)}
+      .f4 .fl.on:after{content:"written";color:var(--ok);font-size:11px}
+      .f4 .dir{font:600 11.5px var(--mono);color:var(--muted);margin:6px 0 2px}
+    </style>
+    <span class="badge" style="left:0;top:-28px">Simulated example</span>
+    <div class="t4 term"><div class="bar"><i></i><i></i><i></i><span style="margin-left:8px">katalon-to-playwright</span></div><div class="body"><div class="wrap" id="t4"></div></div></div>
+    <div class="f4 card"><div class="label">Project files</div><div id="f4"></div></div>
+  </div>
+</div>
+<div class="note">
+  <h4>Presenter notes</h4>
+  <p>The flow: pull the Katalon build from LambdaTest, read every recorded command, map steps to page objects, write the project, then run the new suite on LambdaTest and compare.</p>
+  <p>The terminal output is a simulated walkthrough. The file names, build IDs, test counts and pass results are real.</p>
+  <div class="src">Sources: project folder structure; <b>package.json</b> (Playwright 1.65.1, TypeScript); <b>migration-report.html</b> (6/6 passing, build 112384971, conversion time 13m 07s); comments in <b>tests/*.spec.ts</b> naming source test IDs from build 112382179.</div>
+</div>
+</section>
+
+<!-- 5 CODE -->
+<section class="chapter" id="code" data-short="Before / after">
+<div class="canvas">
+  <div class="kicker">Before and after</div>
+  <h1>58 browser calls become <em>one readable test.</em></h1>
+  <p class="sub">Same login test. Left: every command Katalon sent. Right: the Playwright code that replaced it.</p>
+  <div class="visual" data-anim="code">
+    <style>
+      .b5{position:absolute;left:0;top:0;bottom:44px;width:470px;padding:16px 18px;display:flex;flex-direction:column}
+      .b5 .grid{display:grid;grid-template-columns:repeat(10,1fr);gap:6px;margin-top:12px}
+      .b5 .grid i{height:28px;border-radius:6px;display:block;animation:pop .4s ease both}
+      .b5 .lgd{margin-top:auto;display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;font-size:12.5px}
+      .b5 .lgd span{display:flex;align-items:center;gap:7px}
+      .b5 .lgd i{width:12px;height:12px;border-radius:3px;display:inline-block}
+      .cA{background:var(--a1)}.cF{background:#9aa3c2}.cW{background:#dfe2ec}.cE{background:var(--bad)}.cO{background:#f1d9a6}
+      .a5{position:absolute;right:0;top:0;bottom:44px;width:670px;padding:16px 14px;display:flex;flex-direction:column}
+      .a5 .code{margin-top:8px}
+      .a5 .foot{margin-top:auto;display:flex;gap:8px}
+    </style>
+    <span class="badge real" style="left:0;top:-28px">Real log and real code</span>
+    <div class="b5 card"><div class="label">Katalon · 58 commands · 12s</div><div class="grid" id="g5"></div>
+      <div class="lgd"><span><i class="cA"></i>Actions: 7</span><span><i class="cF"></i>Find element: 7</span><span><i class="cW"></i>Wait and visibility scripts: 31</span><span><i class="cE"></i>Failed smart-waits: 7</span><span><i class="cO"></i>Session setup and teardown: 6</span></div></div>
+    <div class="a5 card"><div class="label">Playwright · tests/TC_CURA_Login_Parameterization.spec.ts</div>
+<div class="code" id="c5"><span class="ln"><span class="k">for</span> (<span class="k">const</span> row <span class="k">of</span> data.iterations) {</span><span class="ln">  <span class="f">test</span>(<span class="s">`${data.testName} - ${row.name}`</span>, <span class="k">async</span> ({ page }) =&gt; {</span><span class="ln">    <span class="k">const</span> home = <span class="k">new</span> <span class="f">HomePage</span>(page);</span><span class="ln">    <span class="k">const</span> login = <span class="k">new</span> <span class="f">LoginPage</span>(page);</span><span class="ln">    <span class="k">const</span> appointment = <span class="k">new</span> <span class="f">AppointmentPage</span>(page);</span><span class="ln">&nbsp;</span><span class="ln">    <span class="k">await</span> home.<span class="f">goto</span>();</span><span class="ln">    <span class="k">await</span> home.<span class="f">clickMakeAppointment</span>();</span><span class="ln">    <span class="k">const</span> user = <span class="f">getUser</span>(row.user);</span><span class="ln">    <span class="k">await</span> login.<span class="f">login</span>(user.username, user.password);</span><span class="ln">&nbsp;</span><span class="ln">    <span class="k">await</span> <span class="f">expect</span>(appointment.heading).<span class="f">toBeVisible</span>();</span><span class="ln">  });</span><span class="ln">}</span></div>
+      <div class="foot fade" id="f5"><span class="pill ok">passed on LambdaTest</span><span class="pill n">20 commands</span><span class="pill n">7s</span><span class="pill n">test name kept: "... - John Doe"</span></div>
+    </div>
+  </div>
+</div>
+<div class="note">
+  <h4>Presenter notes</h4>
+  <p>Each square on the left is one real WebDriver call from the Katalon run, in order. Only 7 of them are the actual user actions: navigate, click, clear, type, clear, type, click.</p>
+  <p>The right side is the actual migrated spec. The data-driven loop keeps the original test name format, so dashboards and history still line up.</p>
+  <div class="src">Sources: <b>build-112382179.html</b> test 3 log (58 commands classified by type); <b>tests/TC_CURA_Login_Parameterization.spec.ts</b>; <b>migration-report.html</b> (12s / 58 commands to 7s / 20 commands).</div>
+</div>
+</section>
+
+<!-- 6 STRUCTURE -->
+<section class="chapter" id="structure" data-short="Structure">
+<div class="canvas">
+  <div class="kicker">What you get</div>
+  <h1>A framework, <em>not a pile of scripts.</em></h1>
+  <p class="sub">Every Katalon concept lands in a familiar Playwright home.</p>
+  <div class="visual" data-anim="structure">
+    <style>
+      .m6{position:absolute;inset:0 0 44px 0;display:flex;flex-direction:column;gap:10px}
+      .m6 .row{display:grid;grid-template-columns:330px 1fr 470px;align-items:center;gap:0}
+      .m6 .lc,.m6 .rc{padding:11px 16px;border-radius:12px;opacity:0;transition:opacity .6s,transform .6s}
+      .m6 .lc{background:#fff;border:1px solid var(--line);transform:translateX(-10px)}
+      .m6 .rc{background:#fff;border:1px solid #cfcdfb;transform:translateX(10px)}
+      .m6 .row.in .lc,.m6 .row.in .rc{opacity:1;transform:none}
+      .m6 .lc b,.m6 .rc b{display:block;font-size:14.5px}
+      .m6 .rc b{font-family:var(--mono);font-size:13.5px;color:var(--a1)}
+      .m6 small{font-size:12.5px;color:var(--muted)}
+      .m6 .ar{height:2px;margin:0 10px;background:var(--grad);transform:scaleX(0);transform-origin:left;transition:transform .7s ease .25s;position:relative}
+      .m6 .row.in .ar{transform:scaleX(1)}
+      .m6 .ar:after{content:"";position:absolute;right:-2px;top:-4px;border:5px solid transparent;border-left:7px solid #12b5a6;border-right:0}
+      .m6 .heads{display:grid;grid-template-columns:330px 1fr 470px}
+    </style>
+    <span class="badge real" style="right:0;top:-28px">From the migrated project</span>
+    <div class="m6" id="m6">
+      <div class="heads"><span class="label">Katalon Studio</span><span></span><span class="label">Playwright project</span></div>
+      <div class="row"><div class="lc"><b>Test Cases</b><small>6 recorded tests</small></div><div class="ar"></div><div class="rc"><b>tests/*.spec.ts</b><small>4 spec files, 6 tests, original names kept</small></div></div>
+      <div class="row"><div class="lc"><b>Object Repository</b><small>locators per screen</small></div><div class="ar"></div><div class="rc"><b>pages/cura, pages/guru99</b><small>Page objects, XPath kept as recorded</small></div></div>
+      <div class="row"><div class="lc"><b>Execution Profile</b><small>global variables</small></div><div class="ar"></div><div class="rc"><b>config/variables.ts</b><small>URLs, timeouts, grid settings in one place</small></div></div>
+      <div class="row"><div class="lc"><b>Data Files</b><small>test inputs</small></div><div class="ar"></div><div class="rc"><b>test-data/*.json</b><small>Logins, programs, appointment, upload file</small></div></div>
+      <div class="row"><div class="lc"><b>Custom Keyword</b><small>Manual_datepicker</small></div><div class="ar"></div><div class="rc"><b>pages/components/DatePicker.ts</b><small>Reusable component with the same fallback</small></div></div>
+      <div class="row"><div class="lc"><b>Remote run on LambdaTest</b><small>one test at a time</small></div><div class="ar"></div><div class="rc"><b>fixtures/lt-fixture.ts</b><small>One LambdaTest session per test, 6 parallel workers</small></div></div>
+    </div>
+  </div>
+</div>
+<div class="note">
+  <h4>Presenter notes</h4>
+  <p>TCS engineers who know Katalon can find everything. The project is a standard Playwright TypeScript layout with a Page Object Model, JSON test data and one config file.</p>
+  <p>Locators were kept exactly as recorded in the LambdaTest logs, which makes review simple: same XPath, new framework.</p>
+  <div class="src">Sources: project tree; <b>config/variables.ts</b> ("the Playwright equivalent of a Katalon execution profile"); <b>pages/components/DatePicker.ts</b> ("replaces the Manual_datepicker custom keyword"); <b>pages/BasePage.ts</b>; <b>playwright.config.ts</b> (workers: 6); <b>migration-report.html</b> "At a glance".</div>
+</div>
+</section>
+
+<!-- 7 HARD -->
+<section class="chapter" id="hard" data-short="Hard cases">
+<div class="canvas">
+  <div class="kicker">The tricky parts</div>
+  <h1>Custom keywords and <em>fussy widgets</em> came across too.</h1>
+  <p class="sub">Three things that usually break a migration, and how each one was carried over.</p>
+  <div class="visual" data-anim="hard">
+    <style>
+      .h7{position:absolute;inset:0 0 44px 0;display:grid;grid-template-columns:270px 1fr;gap:16px}
+      .h7 .tabs{display:flex;flex-direction:column;gap:10px}
+      .h7 .tab{padding:14px 16px;border-radius:14px;border:1px solid var(--line);background:#fff;transition:all .4s;text-align:left}
+      .h7 .tab b{display:block;font-size:15px}
+      .h7 .tab small{font-size:12.5px;color:var(--muted)}
+      .h7 .tab.on{border-color:#bdbafc;background:var(--tint);box-shadow:var(--shadow)}
+      .h7 .pane{padding:18px 22px;position:relative;overflow:hidden}
+      .h7 .scene{position:absolute;inset:18px 22px;display:none}
+      .h7 .scene.on{display:block;animation:rin .5s ease both}
+      .dp{width:290px;border:1px solid var(--line);border-radius:12px;padding:10px;font-size:13px;box-shadow:var(--shadow);background:#fff}
+      .dp .hdr{display:flex;justify-content:space-between;align-items:center;padding:6px 8px;border-radius:8px;font-weight:700;transition:background .3s}
+      .dp .hdr.click{background:#e2e0ff}
+      .dp .gridd{display:grid;gap:4px;margin-top:6px}
+      .dp .gridd span{text-align:center;padding:7px 0;border-radius:7px;transition:background .3s,color .3s}
+      .dp .gridd span.click{background:var(--a1);color:#fff}
+      .dp .gridd span.mut{color:#c3c7d4}
+      .inp{font:13px var(--mono);border:1px solid var(--line);border-radius:9px;padding:9px 12px;width:290px;margin-bottom:10px;background:#fff}
+      .h7 .codebox{position:absolute;right:0;top:0;width:340px}
+      .h7 .codebox .code{font-size:12px;background:var(--tint);border-radius:12px;padding:10px 4px;white-space:pre-wrap}
+      .h7 .steps{margin-top:12px;display:flex;flex-direction:column;gap:6px}
+      .h7 .steps div{font:12.5px var(--mono);color:var(--soft);transition:color .3s}
+      .h7 .steps div.in{color:var(--ink)}
+      .h7 .steps div.in:before{content:"✓ ";color:var(--ok)}
+      .rg{display:flex;flex-direction:column;gap:12px;margin-top:6px}
+      .rg label{display:flex;align-items:center;gap:10px;font-size:15px}
+      .rg .rb{width:20px;height:20px;border-radius:50%;border:2px solid #b8bdd0;display:grid;place-items:center;transition:border-color .3s}
+      .rg .rb.chk{border-color:var(--a1)}
+      .rg .rb.chk:after{content:"";width:10px;height:10px;border-radius:50%;background:var(--a1)}
+      .rg .rb.ring{box-shadow:0 0 0 6px rgba(91,84,245,.18)}
+      .xp{font:14px var(--mono);background:var(--tint);padding:14px 16px;border-radius:12px;margin-top:4px}
+      .xp .v{color:#fff;background:var(--a1);padding:1px 7px;border-radius:6px;transition:all .3s}
+      .xr{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border:1px solid var(--line);border-radius:10px;margin-top:8px;font:13px var(--mono)}
+    </style>
+    <span class="badge" style="right:0;top:-28px">Simulated example, real code</span>
+    <div class="h7">
+      <div class="tabs">
+        <div class="tab" data-t="0"><b>Datepicker keyword</b><small>Manual_datepicker rebuilt as a component</small></div>
+        <div class="tab" data-t="1"><b>Radio that ignores clicks</b><small>Native click, then a JS click fallback</small></div>
+        <div class="tab" data-t="2"><b>Dynamic XPath</b><small>One test per healthcare program</small></div>
+      </div>
+      <div class="pane card">
+        <div class="scene" data-s="0">
+          <div class="label" style="margin-bottom:8px">Visit date · bootstrap-datepicker</div>
+          <div class="inp" id="dpIn">dd/mm/yyyy</div>
+          <div class="dp"><div class="hdr" id="dpH"><span>‹</span><span id="dpHt">November 2026</span><span>›</span></div><div class="gridd" id="dpG"></div></div>
+          <div class="codebox"><div class="code"><span class="ln in"><span class="k">await</span> appointment.<span class="f">selectVisitDate</span>(<span class="s">'2026-11-25'</span>);</span></div>
+            <div class="steps" id="dpS"><div>open picker (jQuery show fallback)</div><div>days view to months view</div><div>months view to decade view</div><div>pick 2026</div><div>pick Nov</div><div>pick 25</div><div>input reads 25/11/2026</div></div></div>
+        </div>
+        <div class="scene" data-s="1">
+          <div class="label" style="margin-bottom:8px">Healthcare program</div>
+          <div class="rg" id="rg"><label><span class="rb"></span>Medicare</label><label><span class="rb"></span>Medicaid</label><label><span class="rb"></span>None</label></div>
+          <div id="rgMsg" style="margin-top:20px;display:flex;flex-direction:column;gap:8px"></div>
+          <div class="codebox"><div class="code"><span class="ln in"><span class="k">await</span> radio.<span class="f">click</span>();</span><span class="ln in"><span class="k">if</span> (!(<span class="k">await</span> radio.<span class="f">isChecked</span>())) {</span><span class="ln in">  <span class="k">await</span> radio.<span class="f">evaluate</span>((el) =&gt; {</span><span class="ln in">    el.<span class="f">scrollIntoView</span>({ block: <span class="s">'center'</span> });</span><span class="ln in">    el.<span class="f">click</span>();</span><span class="ln in">  });</span><span class="ln in">}</span></div></div>
+        </div>
+        <div class="scene" data-s="2">
+          <div class="label" style="margin-bottom:8px">One locator template, three tests</div>
+          <div class="xp">//input[@name='programs' and @value='<span class="v" id="xpV">${program}</span>']</div>
+          <div id="xpR" style="margin-top:8px;width:520px"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="note">
+  <h4>Presenter notes</h4>
+  <p><b>Datepicker:</b> the Katalon custom keyword Manual_datepicker became a reusable DatePicker component. It follows the same path recorded in the LambdaTest log: days header, months header, decade view, year, month, day. If the click does not open the picker, it falls back to jQuery datepicker('show'), like the original keyword.</p>
+  <p><b>Radio:</b> the original Katalon runs needed a JS click for Medicaid and None. The page object does a native click first and only uses the JS click if the radio is still unchecked.</p>
+  <p><b>Dynamic XPath:</b> one parameterised locator, one test per program, named exactly like the original runs.</p>
+  <p>The widget animations are simulated. The code and test data are real.</p>
+  <div class="src">Sources: <b>pages/components/DatePicker.ts</b>; <b>pages/cura/AppointmentPage.ts</b>; <b>tests/TC_CURA_DynamicXPath.spec.ts</b>; <b>test-data/curaAppointment.json</b> (visitDate 2026-11-25, program Medicaid); <b>test-data/curaPrograms.json</b>.</div>
+</div>
+</section>
+
+<!-- 8 FAILURE -->
+<section class="chapter" id="failure" data-short="A real failure">
+<div class="canvas">
+  <div class="kicker">When things break</div>
+  <h1>The demo site broke. The test got <em>a fix, not a skip.</em></h1>
+  <p class="sub">On 18 Nov 2026 the File Upload page stopped rendering. Here is what failed and what changed.</p>
+  <div class="visual" data-anim="failure">
+    <style>
+      .br8{position:absolute;left:0;top:0;bottom:44px;width:640px;display:flex;flex-direction:column;overflow:hidden}
+      .br8 .chrome{height:40px;display:flex;align-items:center;gap:8px;padding:0 14px;border-bottom:1px solid var(--line);background:#fafbfd}
+      .br8 .chrome i{width:10px;height:10px;border-radius:50%;background:#dfe2ea;display:inline-block}
+      .br8 .url{flex:1;margin-left:8px;font:12.5px var(--mono);background:#fff;border:1px solid var(--line);border-radius:8px;padding:5px 10px;color:var(--muted)}
+      .br8 .page{height:210px;position:relative;padding:20px 24px;border-bottom:1px solid var(--line)}
+      .br8 .skel div{height:12px;border-radius:6px;background:linear-gradient(90deg,#eef0f6,#f7f8fb,#eef0f6);background-size:200% 100%;animation:sh 1.6s linear infinite;margin-bottom:10px}
+      @keyframes sh{to{background-position:-200% 0}}
+      .br8 .form{display:none}
+      .br8 .form.on{display:block;animation:rin .6s ease both}
+      .br8 .form .fr{display:flex;align-items:center;gap:10px;margin-bottom:12px;font-size:14px}
+      .br8 .form .fb{border:1px solid var(--line);border-radius:7px;padding:5px 10px;font-size:13px;background:#f6f7fb}
+      .br8 .form .cb{width:16px;height:16px;border:2px solid #b8bdd0;border-radius:4px;display:inline-grid;place-items:center}
+      .br8 .form .cb.on{background:var(--a1);border-color:var(--a1)}
+      .br8 .form .cb.on:after{content:"";width:5px;height:9px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg) translate(-1px,-1px)}
+      .br8 .form .sb{background:#3b6ee0;color:#fff;border-radius:7px;padding:7px 16px;font-size:13px;display:inline-block}
+      .br8 .net{flex:1;overflow:hidden;padding:8px 0}
+      .br8 .nr{display:grid;grid-template-columns:1fr 92px;padding:5px 14px;font:12px var(--mono);animation:rin .45s ease both}
+      .br8 .nr .st{text-align:right}
+      .s8{position:absolute;right:0;top:0;width:470px;display:flex;flex-direction:column;gap:12px}
+      .s8 .card{padding:14px 16px}
+      .s8 .code{font-size:11.6px;white-space:pre-wrap}
+    </style>
+    <span class="badge" style="left:0;top:-28px">Simulated example</span>
+    <div class="br8 card">
+      <div class="chrome"><i></i><i></i><i></i><div class="url">demo.guru99.com/test/upload/</div></div>
+      <div class="page"><div class="skel" id="sk"><div style="width:60%"></div><div style="width:85%"></div><div style="width:40%"></div><div style="width:70%"></div></div>
+        <div class="form" id="fm"><div class="fr"><span class="fb">Choose file</span><span class="mono" id="fmF" style="font-size:13px;color:var(--muted)">No file chosen</span></div>
+          <div class="fr"><span class="cb" id="fmC"></span><span>Accept terms of service</span></div><span class="sb">Submit File</span></div></div>
+      <div class="net"><div class="label" style="padding:0 14px 4px">Network</div><div id="nt"></div></div>
+    </div>
+    <div class="s8">
+      <div class="card fade" id="s8a" style="border-color:#f3c3bf"><span class="pill bad">failed</span>
+        <p style="margin-top:8px;font-size:14px;line-height:1.5"><b>Why:</b> cdn.guru99.com was unreachable, so the page's render-blocking jQuery never loaded and the upload form never appeared.</p></div>
+      <div class="card fade" id="s8b"><div class="label">Fix in pages/guru99/FileUploadPage.ts</div>
+<div class="code" style="margin-top:6px"><span class="ln in"><span class="k">await</span> page.<span class="f">route</span>(<span class="n">/cdn\.guru99\.com/</span>, (route) =&gt;</span><span class="ln in">  <span class="n">/jquery\.min\.js/</span>.<span class="f">test</span>(route.<span class="f">request</span>().<span class="f">url</span>())</span><span class="ln in">    ? route.<span class="f">continue</span>({ url: <span class="s">jqueryFallbackUrl</span> })</span><span class="ln in">    : route.<span class="f">abort</span>());</span></div></div>
+      <div class="card fade" id="s8c"><span class="pill ok">passed · 6s</span><p style="margin-top:8px;font-size:13.5px;line-height:1.5;color:var(--muted)">Same jQuery library, served from code.jquery.com. Turn it off with <span class="mono">GURU99_CDN_FALLBACK=false</span> once the site recovers.</p></div>
+    </div>
+  </div>
+</div>
+<div class="note">
+  <h4>Presenter notes</h4>
+  <p>Be honest about failures: during the migration, the third-party demo site's CDN went down. The test did not get skipped or marked flaky. The page object routes the jQuery request to code.jquery.com and drops ad and tracker requests so the page's own form loads.</p>
+  <p>The workaround is a config switch, so it can be removed when the site recovers. This is the kind of thing Playwright network routing makes easy.</p>
+  <div class="src">Sources: <b>pages/guru99/FileUploadPage.ts</b> (comment: "cdn.guru99.com ... was found unreachable on 2026-11-18, leaving the upload form un-rendered"); <b>config/variables.ts</b> (workarounds.guru99CdnFallback, jquery-1.12.4.min.js); <b>migration-report.html</b> (File Upload passed, 6s). Browser and network panel are simulated.</div>
+</div>
+</section>
+
+<!-- 9 COMMANDS -->
+<section class="chapter" id="commands" data-short="Commands">
+<div class="canvas">
+  <div class="kicker">Result 1 · Efficiency</div>
+  <h1><em>71% fewer</em> browser commands.</h1>
+  <p class="sub">Playwright waits for elements natively, so the extra polling calls disappear.</p>
+  <div class="visual" data-anim="commands">
+    <style>
+      .c9{position:absolute;left:0;top:0;bottom:44px;width:850px;padding:18px 22px}
+      .c9 .r{display:grid;grid-template-columns:300px 1fr 64px;align-items:center;gap:12px;margin-bottom:15px}
+      .c9 .nm{font:12px var(--mono);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+      .c9 .bars{display:flex;flex-direction:column;gap:4px}
+      .c9 .bar{height:14px;border-radius:5px;width:0;transition:width 1.2s cubic-bezier(.2,.7,.2,1);display:flex;align-items:center}
+      .c9 .bar span{font:600 11px var(--mono);margin-left:calc(100% + 6px);white-space:nowrap}
+      .c9 .bk{background:#cdd2e0}.c9 .bp{background:var(--grad)}
+      .c9 .pc{font:700 13px var(--mono);color:var(--ok);opacity:0;transition:opacity .5s}
+      .c9 .lg9{display:flex;gap:16px;font-size:12.5px;color:var(--muted);margin-bottom:14px}
+      .c9 .lg9 i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+      .t9{position:absolute;right:0;top:0;width:290px;padding:22px}
+      .t9 .bign{font-size:54px;font-weight:800;line-height:1;letter-spacing:-.03em}
+      .t9 .from{font-size:22px;color:var(--soft);text-decoration:line-through;font-weight:700}
+    </style>
+    <span class="badge real" style="left:0;top:-28px">Real results, LambdaTest</span>
+    <div class="c9 card"><div class="lg9"><span><i style="background:#cdd2e0"></i>Katalon</span><span><i style="background:var(--a1)"></i>Playwright</span></div><div id="c9"></div></div>
+    <div class="t9 card"><div class="label">Commands per full run</div><div class="from" id="t9f" style="margin-top:14px">534</div><div class="bign" id="t9n">534</div><div class="pill ok fade" id="t9p" style="margin-top:12px">▼ 71%</div>
+      <p class="fade" id="t9x" style="margin-top:16px;font-size:13.5px;line-height:1.5;color:var(--muted)">Biggest drop: the calendar test, 175 commands down to 39. The datepicker no longer polls between every click.</p></div>
+  </div>
+</div>
+<div class="note">
+  <h4>Presenter notes</h4>
+  <p>Fewer commands means fewer round trips to the grid, less to debug and faster runs. Every test dropped, from 22% on File Upload to 78% on the calendar test.</p>
+  <div class="src">Source: <b>migration-report.html</b>, "Test-by-test results" and "Browser commands per full run 534 to 154, down 71%". Katalon build 112382179, Playwright build 112384971, both Chrome 157 on Windows 11.</div>
+</div>
+</section>
+
+<!-- 10 SPEED -->
+<section class="chapter" id="speed" data-short="Speed">
+<div class="canvas">
+  <div class="kicker">Result 2 · Speed</div>
+  <h1>Full suite from <em>185s to 27s.</em></h1>
+  <p class="sub">Tests run in parallel instead of one after another, and each one runs faster.</p>
+  <div class="visual" data-anim="speed">
+    <style>
+      .g10{position:absolute;left:0;top:0;bottom:44px;width:860px;padding:16px 22px}
+      .g10 .ax{position:relative;height:18px;margin-left:120px;font:11px var(--mono);color:var(--soft)}
+      .g10 .ax span{position:absolute;transform:translateX(-50%)}
+      .g10 .lane{display:grid;grid-template-columns:120px 1fr;align-items:start;margin-top:10px}
+      .g10 .ln10{font:600 12px var(--mono);padding-top:4px}
+      .g10 .trk{position:relative;background:repeating-linear-gradient(90deg,#f3f4f8 0 1px,transparent 1px 64.86px)}
+      .g10 .bk10{position:absolute;height:20px;border-radius:5px;width:0;background:#cdd2e0}
+      .g10 .bp10{position:absolute;height:20px;border-radius:5px;width:0;background:var(--grad)}
+      .g10 .ph{position:absolute;top:34px;bottom:16px;width:2px;background:var(--ink);left:142px;opacity:.75}
+      .g10 .ph span{position:absolute;top:-2px;left:6px;font:700 11px var(--mono);background:var(--ink);color:#fff;padding:2px 6px;border-radius:5px;white-space:nowrap}
+      .g10 .done{position:absolute;font:700 11px var(--mono);color:var(--ok);opacity:0;transition:opacity .4s;white-space:nowrap}
+      .s10{position:absolute;right:0;top:0;width:280px;display:flex;flex-direction:column;gap:12px}
+      .s10 .card{padding:14px 18px}
+      .s10 b{font-size:26px;font-weight:780;display:block;margin-top:4px}
+      .s10 s{color:var(--soft);font-size:16px;margin-right:6px}
+    </style>
+    <span class="badge real" style="left:0;top:-28px">Real durations · Playwright lane positions illustrative</span>
+    <div class="g10 card" id="g10">
+      <div class="ax" id="ax10"></div>
+      <div class="lane"><div class="ln10">Katalon<br><span style="font-weight:400;color:var(--soft)">one at a time</span></div><div class="trk" id="tk" style="height:56px"></div></div>
+      <div class="lane" style="margin-top:18px"><div class="ln10">Playwright<br><span style="font-weight:400;color:var(--soft)">6 workers</span></div><div class="trk" id="tp" style="height:170px"></div></div>
+      <div class="ph" id="ph"><span id="phT">0s</span></div>
+    </div>
+    <div class="s10">
+      <div class="card fade" id="s10a"><span class="label">Full suite run time</span><b><s>185s</s>27s</b><span class="pill ok">▼ 85%</span></div>
+      <div class="card fade" id="s10b"><span class="label">Total test execution</span><b><s>123s</s>47s</b><span class="pill ok">▼ 62%</span></div>
+      <div class="card fade" id="s10c"><span class="label">Errors logged</span><b><s>78</s>0</b><span class="pill ok">▼ 100%</span></div>
+    </div>
+  </div>
+</div>
+<div class="note">
+  <h4>Presenter notes</h4>
+  <p>The playhead runs at 20x speed. The Katalon lane uses the real start times from the LambdaTest build log. In the Playwright lane, durations and the 27s total are real; the exact start offsets of each worker are illustrative.</p>
+  <p>Two separate wins: each test is faster (123s to 47s total execution) and the suite runs six workers in parallel (185s to 27s wall clock).</p>
+  <div class="src">Sources: <b>migration-report.html</b> (185s to 27s, 123s to 47s, 78 to 0 errors); <b>build-112382179.html</b> (Katalon start times 13:10:30, 13:11:01, 13:11:42, 13:12:03, 13:12:36, 13:13:05 against a 13:10:21 build start); <b>playwright.config.ts</b> (workers: 6, fullyParallel).</div>
+</div>
+</section>
+
+<!-- 11 GRID -->
+<section class="chapter" id="grid" data-short="Same grid">
+<div class="canvas">
+  <div class="kicker">Where it runs</div>
+  <h1>Still on LambdaTest. <em>Now over Playwright.</em></h1>
+  <p class="sub">One fixture connects every test to the grid and reports its result back.</p>
+  <div class="visual" data-anim="grid">
+    <style>
+      .c11{position:absolute;left:0;top:0;bottom:44px;width:640px;padding:14px 10px;overflow:hidden}
+      .c11 .code{font-size:12.4px;line-height:1.62}
+      .s11{position:absolute;right:0;top:0;bottom:44px;width:470px;padding:18px 20px;display:flex;flex-direction:column;gap:12px}
+      .s11 .st{display:flex;align-items:center;gap:10px;font-size:14px;opacity:.25;transition:opacity .5s}
+      .s11 .st.in{opacity:1}
+      .s11 .dot{width:22px;height:22px;border-radius:50%;background:var(--tint);display:grid;place-items:center;font:700 11px var(--mono);color:var(--a1);flex:none}
+      .s11 .st.in .dot{background:var(--a1);color:#fff}
+      .s11 .vid{height:120px;border-radius:12px;background:#14172b;position:relative;overflow:hidden;opacity:0;transition:opacity .6s}
+      .s11 .vid.in{opacity:1}
+      .s11 .vid:after{content:"";position:absolute;left:0;bottom:0;height:4px;width:0;background:var(--grad);animation:none}
+      .s11 .vid.in:after{animation:pr 6s linear forwards}
+      @keyframes pr{to{width:100%}}
+      .s11 .vid span{position:absolute;left:14px;top:12px;font:600 11px var(--mono);color:#a9aecb}
+      .s11 .tabs{display:flex;gap:6px}
+    </style>
+    <span class="badge" style="right:0;top:-28px">Simulated session · real fixture code</span>
+    <div class="c11 card"><div class="label" style="padding:0 8px 6px">fixtures/lt-fixture.ts (excerpt)</div>
+<div class="code" id="c11"><span class="ln"><span class="k">const</span> capabilities = {</span><span class="ln">  browserName: lt.browserName, <span class="c">// 'Chrome'</span></span><span class="ln">  browserVersion: lt.browserVersion, <span class="c">// 'latest'</span></span><span class="ln">  <span class="s">'LT:Options'</span>: {</span><span class="ln">    platform: lt.platform, <span class="c">// 'Windows 11'</span></span><span class="ln">    name: testInfo.title,</span><span class="ln">    video: <span class="n">true</span>, console: <span class="n">true</span>, network: <span class="n">true</span>,</span><span class="ln">  },</span><span class="ln">};</span><span class="ln"><span class="k">const</span> browser = <span class="k">await</span> chromium.<span class="f">connect</span>(</span><span class="ln">  <span class="s">`wss://cdp.lambdatest.com/playwright?capabilities=...`</span>);</span><span class="ln"><span class="k">await</span> <span class="f">use</span>(page);</span><span class="ln"><span class="c">// report the Playwright verdict back to LambdaTest</span></span><span class="ln"><span class="k">await</span> page.<span class="f">evaluate</span>(() =&gt; {}, <span class="s">`lambdatest_action: ${...setTestStatus...}`</span>);</span></div></div>
+    <div class="s11 card">
+      <div class="label">LambdaTest session · TC_CURA_DynamicXPath - Medicare</div>
+      <div class="st" data-i="0"><span class="dot">1</span>Capabilities set, session named after the test</div>
+      <div class="st" data-i="1"><span class="dot">2</span>Connected to Chrome on Windows 11, 1920x1080</div>
+      <div class="vid" id="vid"><span>video recording</span></div>
+      <div class="st" data-i="2"><span class="dot">3</span><span class="tabs"><span class="pill n">Video</span><span class="pill n">Console</span><span class="pill n">Network</span></span></div>
+      <div class="st" data-i="3"><span class="dot">4</span>Result reported back:&nbsp;<span class="pill ok">passed</span></div>
+    </div>
+  </div>
+</div>
+<div class="note">
+  <h4>Presenter notes</h4>
+  <p>Nothing changes for the TCS team on the infrastructure side: same LambdaTest account, same dashboards, video, console and network logs per test. The fixture opens one LambdaTest session per test, named after the test, and sends the pass or fail verdict back.</p>
+  <p>By design this project only runs on LambdaTest; there is no local browser fallback.</p>
+  <div class="src">Sources: <b>fixtures/lt-fixture.ts</b>; <b>config/variables.ts</b> (wss://cdp.lambdatest.com/playwright, Chrome latest, Windows 11, 1920x1080). The session panel is simulated.</div>
+</div>
+</section>
+
+<!-- 12 FAQ -->
+<section class="chapter" id="faq" data-short="FAQ">
+<div class="canvas">
+  <div class="kicker">Questions</div>
+  <h1>What TCS will <em>probably ask.</em></h1>
+  <p class="sub">Type to filter. Every answer comes from this migration.</p>
+  <div class="visual" data-anim="faq">
+    <style>
+      .q12{position:absolute;inset:0 0 44px 0;display:flex;flex-direction:column}
+      .q12 input{width:100%;height:44px;border-radius:12px;border:1px solid var(--line);padding:0 16px 0 42px;font:15px var(--sans);background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%238a90a3' stroke-width='1.8'%3E%3Ccircle cx='7' cy='7' r='5'/%3E%3Cpath d='M11 11l3.5 3.5'/%3E%3C/svg%3E") no-repeat 16px center;outline:none}
+      .q12 input:focus{border-color:#bdbafc;box-shadow:0 0 0 4px rgba(91,84,245,.12)}
+      .q12 .list{margin-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:10px;align-content:start;overflow:hidden;flex:1}
+      .q12 details{background:#fff;border:1px solid var(--line);border-radius:12px;padding:11px 14px}
+      .q12 details[open]{border-color:#c8c6fb;grid-column:span 2}
+      .q12 summary{font-weight:650;font-size:14px;cursor:pointer;list-style:none;display:flex;justify-content:space-between;gap:10px}
+      .q12 summary::-webkit-details-marker{display:none}
+      .q12 summary:after{content:"+";font:700 15px var(--mono);color:var(--a1)}
+      .q12 details[open] summary:after{content:"−"}
+      .q12 details p{margin-top:8px;font-size:13.5px;line-height:1.5;color:var(--muted)}
+      .q12 .none{display:none;font-size:14px;color:var(--muted);padding:12px}
+    </style>
+    <div class="q12">
+      <input type="search" id="faqQ" placeholder="Search: names, keywords, data, local, browsers..." aria-label="Search questions">
+      <div class="list" id="faqL">
+        <details class="fade"><summary>Do the test names stay the same?</summary><p>Yes. All 6 tests kept their original names, including data-driven names such as "TC_CURA_Login_Parameterization - John Doe" and "TC_CURA_DynamicXPath - Medicaid".</p></details>
+        <details class="fade"><summary>What happens to custom keywords?</summary><p>They become reusable components. The Manual_datepicker keyword is now pages/components/DatePicker.ts, with the same jQuery fallback the keyword used.</p></details>
+        <details class="fade"><summary>What happens to the Object Repository?</summary><p>It becomes page objects under pages/. Locators are kept exactly as recorded in the LambdaTest command logs (XPath), so reviewers can compare one to one.</p></details>
+        <details class="fade"><summary>Where do profiles and data files go?</summary><p>Execution profile values move to config/variables.ts. Test inputs move to JSON files under test-data/, and data-driven tests loop over them.</p></details>
+        <details class="fade"><summary>Can it run on a local browser?</summary><p>This project is LambdaTest only by design: the fixture stops if LT_USERNAME and LT_ACCESS_KEY are not set. A local Playwright project can be added if you want one.</p></details>
+        <details class="fade"><summary>Which language and Playwright version?</summary><p>TypeScript, @playwright/test 1.65.1, with a typecheck script (tsc --noEmit).</p></details>
+        <details class="fade"><summary>How was the result verified?</summary><p>Both suites ran on LambdaTest on the same browser and OS, Chrome 157 on Windows 11: Katalon in build 112382179, Playwright in build 112384971. 6 of 6 passed.</p></details>
+        <details class="fade"><summary>Are retries hiding flaky tests?</summary><p>No. retries is set to 0 in playwright.config.ts. Traces and screenshots are kept only on failure.</p></details>
+        <details class="fade"><summary>Did any test need a workaround?</summary><p>Two. The guru99 page's CDN was down on 18 Nov 2026, so jQuery is routed to code.jquery.com behind a switch. The CURA radio buttons get a JS click if a native click leaves them unchecked, which the Katalon runs also needed.</p></details>
+        <details class="fade"><summary>How long did conversion take?</summary><p>13m 07s for all 6 tests, converted and verified. Tests were converted in parallel, so per-test times overlap.</p></details>
+      </div>
+      <div class="none" id="faqN">No matching question. Try "data", "keyword" or "browser".</div>
+    </div>
+  </div>
+</div>
+<div class="note">
+  <h4>Presenter notes</h4>
+  <p>Let TCS drive this one: ask what they want to know and type it into the search box.</p>
+  <div class="src">Sources: <b>migration-report.html</b>; <b>package.json</b>; <b>playwright.config.ts</b>; <b>fixtures/lt-fixture.ts</b>; <b>pages/</b>; <b>config/variables.ts</b>; <b>test-data/</b>.</div>
+</div>
+</section>
+
+<!-- 13 CTA -->
+<section class="chapter" id="next" data-short="Next steps">
+<div class="canvas">
+  <div class="kicker">Next steps for TCS</div>
+  <h1>Start with <em>one Katalon project.</em></h1>
+  <p class="sub">We prove it on your tests, on your LambdaTest account, before anything scales.</p>
+  <div class="visual" data-anim="next">
+    <style>
+      .n13{position:absolute;inset:0 0 44px 0;display:grid;grid-template-columns:repeat(4,1fr);gap:16px;align-content:start}
+      .n13 .st{padding:22px 20px;min-height:250px;display:flex;flex-direction:column}
+      .n13 .num{width:44px;height:44px;border-radius:14px;background:var(--grad);color:#fff;display:grid;place-items:center;font:800 18px var(--mono)}
+      .n13 b{font-size:18px;margin-top:18px;line-height:1.3}
+      .n13 p{font-size:14px;line-height:1.5;color:var(--muted);margin-top:8px}
+      .n13 .end{grid-column:span 4;display:flex;align-items:center;justify-content:space-between;padding:20px 24px;margin-top:6px}
+      .n13 .end b{margin:0;font-size:19px}
+    </style>
+    <div class="n13">
+      <div class="st card fade"><span class="num">1</span><b>Pick a Katalon project</b><p>Choose one that represents your suites, or share a LambdaTest build ID it already ran in.</p></div>
+      <div class="st card fade"><span class="num">2</span><b>We convert a sample</b><p>The skill reads the run logs and writes the Playwright framework: pages, data, config, fixture.</p></div>
+      <div class="st card fade"><span class="num">3</span><b>Run both side by side</b><p>Same browser, same OS, same grid. You get the comparison report: commands, time, errors.</p></div>
+      <div class="st card fade"><span class="num">4</span><b>Review and agree the scope</b><p>Walk the code with your team, then decide which suites move next.</p></div>
+      <div class="end card fade"><div><span class="label">Ready when you are</span><br><b>Send us one Katalon project and see your own before and after.</b></div><a class="btn primary" href="#hero" style="height:42px;padding:0 20px">Back to the start</a></div>
+    </div>
+  </div>
+</div>
+<div class="note">
+  <h4>Presenter notes</h4>
+  <p>Close on a small, concrete ask: one project, run side by side, reviewed together. No commitment to scale until TCS has seen its own numbers.</p>
+  <div class="src">The steps mirror how this demo migration was done: LambdaTest build 112382179 to build 112384971, with migration-report.html as the comparison.</div>
+</div>
+</section>
+
+</div>
+<aside class="notes" id="notes"><div class="in" id="notesIn"></div></aside>
+</main>
+
+<footer class="bottom">
+  <div class="grp"><button class="btn" id="prevBtn">‹ Previous</button></div>
+  <div class="where" id="where"></div>
+  <div class="grp"><button class="btn primary" id="nextBtn">Next ›</button></div>
+</footer>
+<div class="wipe" id="wipe"></div>
+
+<script>
+(function(){
+"use strict";
+var $=function(s,r){return (r||document).querySelector(s)};
+var $$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))};
+
+/* cancellable timeline */
+function Ctx(){this.alive=true;this.t=[];}
+Ctx.prototype.wait=function(ms){var self=this;return new Promise(function(res){if(!self.alive)return;var id=setTimeout(function(){if(self.alive)res();},ms);self.t.push(id);});};
+Ctx.prototype.stop=function(){this.alive=false;this.t.forEach(clearTimeout);this.t=[];};
+async function countTo(el,from,to,ms,c,suf){suf=suf||"";var n=Math.max(1,Math.round(ms/40));for(var i=1;i<=n;i++){el.textContent=Math.round(from+(to-from)*i/n)+suf;await c.wait(40);}}
+async function typeIn(el,text,c,sp){for(var i=0;i<text.length;i++){el.textContent+=text[i];await c.wait(sp||32);}}
+function el(tag,cls,html){var e=document.createElement(tag);if(cls)e.className=cls;if(html!=null)e.innerHTML=html;return e;}
+
+var TESTS=[
+ {ke:5,n:"File Upload",kd:24,kc:37,pd:6,pc:29,cv:"12m 55s",st:"13:10:30"},
+ {ke:34,n:"TC_CURA_BookAppointment_Calendar",kd:31,kc:175,pd:12,pc:39,cv:"7m 45s",st:"13:11:01"},
+ {ke:7,n:"TC_CURA_Login_Parameterization - John Doe",kd:12,kc:58,pd:7,pc:20,cv:"6m 06s",st:"13:11:42"},
+ {ke:10,n:"TC_CURA_DynamicXPath - Medicare",kd:18,kc:86,pd:8,pc:22,cv:"5m 56s",st:"13:12:03"},
+ {ke:11,n:"TC_CURA_DynamicXPath - Medicaid",kd:19,kc:89,pd:7,pc:22,cv:"5m 59s",st:"13:12:36"},
+ {ke:11,n:"TC_CURA_DynamicXPath - None",kd:19,kc:89,pd:7,pc:22,cv:"5m 56s",st:"13:13:05"}
+];
+/* John Doe test, real command order: o session, A action, F find, W wait/visibility script, E failed smart-wait */
+var SEQ="OOOOAWEFWWWWAEFWWWWWAEFWWWWWWAEFWWWWWAEFWWWWWWAEFWWWWAEFOO".split("");
+
+var A={};
+
+A.hero=async function(v,c){
+  var K=$("#hvK",v),Kc=$("#hvKc",v),Kn=$("#hvKn",v),Kd=$("#hvKd",v),Ke=$("#hvKe",v),P=$("#hvP",v),Pc=$("#hvPc",v),Pn=$("#hvPn",v),Pd=$("#hvPd",v),Pr=$("#hvPr",v),F=$("#hvF",v),T=$("#hvT",v);
+  var order=[2,1,0,3];
+  for(var loop=0;;loop++){
+    for(var oi=0;oi<order.length;oi++){
+      var t=TESTS[order[oi]];
+      K.textContent=t.n;P.innerHTML="&nbsp;";Kc.innerHTML="";Pc.innerHTML="";Kn.textContent="0";Kd.textContent="0s";Ke.textContent="0";Pn.textContent="0";Pd.textContent="0s";Pr.innerHTML="";
+      F.textContent="reading run log";
+      var e=0,every=t.kc/t.ke;
+      for(var i=0;i<t.kc;i++){var isE=e<t.ke&&i>=Math.floor(e*every+every/2);var ch=el("i",isE?"e":"");if(isE)e++;Kc.appendChild(ch);Kn.textContent=i+1;Kd.textContent=Math.round(t.kd*(i+1)/t.kc)+"s";Ke.textContent=e;await c.wait(t.kc>120?20:34);}
+      Kn.textContent=t.kc;Kd.textContent=t.kd+"s";
+      F.textContent="writing Playwright";await c.wait(700);
+      P.textContent=t.n;
+      for(var j=0;j<t.pc;j++){Pc.appendChild(el("i",""));Pn.textContent=j+1;Pd.textContent=Math.round(t.pd*(j+1)/t.pc)+"s";await c.wait(55);}
+      Pr.innerHTML='<span class="pill ok">passed</span>';
+      F.textContent="converted in "+t.cv;
+      await c.wait(2600);
+    }
+    if(!T.children.length){
+      ["534 → 154 commands","185s → 27s full suite","78 → 0 errors","6 of 6 passing"].forEach(function(s,i){var p=el("span","pill ok fade",s);p.style.fontSize="13px";p.style.padding="6px 12px";T.appendChild(p);});
+      for(var q=0;q<T.children.length;q++){T.children[q].classList.add("in");await c.wait(350);}
+    }
+  }
+};
+
+A.baseline=async function(v,c){
+  var R=$("#bRows",v);
+  await c.wait(400);
+  for(var i=0;i<TESTS.length;i++){var t=TESTS[i];var tr=el("tr","fade",'<td class="m">'+(i+1)+'</td><td>'+t.n+'</td><td><span class="pill ok">passed</span></td><td class="m">'+t.st+'</td><td class="m">'+t.kd+'s</td><td class="m">'+t.kc+'</td>');R.appendChild(tr);await c.wait(30);tr.classList.add("in");
+    $("#bT",v).textContent=i+1;$("#bP",v).textContent=i+1;
+    await c.wait(650);}
+  countTo($("#bD",v),0,123,1400,c,"s");await countTo($("#bC",v),0,534,1400,c);
+};
+
+A.hidden=async function(v,c){
+  var rows=[
+   ["5","13:11:45.565","Navigate","url: katalon-demo-cura.herokuapp.com","200"],
+   ["6","13:11:45.699","Execute script","return document.readyState","200"],
+   ["7","13:11:45.805","Execute async","katalon_smart_waiter_do_ajax_wait","500"],
+   ["8","13:11:45.869","Find elements","//a[@id='btn-make-appointment']","200"],
+   ["9","13:11:45.946","Execute async","waitWithDOMMutation(...)","200"],
+   ["11","13:11:46.088","Execute async","kAncestorPreventingLandmark ...","200"],
+   ["13","13:11:46.694","Click","element click","200"],
+   ["14","13:11:46.859","Execute async","katalon_smart_waiter_do_ajax_wait","500"],
+   ["15","13:11:46.936","Find elements","//input[@id='txt-username']","200"],
+   ["21","13:11:47.527","Clear","element clear","200"],
+   ["22","13:11:47.605","Execute async","katalon_smart_waiter_do_ajax_wait","500"],
+   ["30","13:11:48.511","Type","text: John Doe","200"],
+   ["31","13:11:49.145","Execute async","katalon_smart_waiter_do_ajax_wait","500"],
+   ["32","13:11:49.284","Find elements","//input[@id='txt-password']","200"],
+   ["38","13:11:50.028","Clear","element clear","200"],
+   ["39","13:11:50.105","Execute async","katalon_smart_waiter_do_ajax_wait","500"],
+   ["47","13:11:50.698","Type","text: ••••••••","200"],
+   ["48","13:11:50.813","Execute async","katalon_smart_waiter_do_ajax_wait","500"],
+   ["49","13:11:50.879","Find elements","//button[@id='btn-login']","200"],
+   ["54","13:11:51.269","Click","element click","200"],
+   ["55","13:11:51.765","Execute async","katalon_smart_waiter_do_ajax_wait","500"],
+   ["56","13:11:51.944","Find elements","//h2[normalize-space()='Make Appointment']","200"]
+  ];
+  var W=$("#lgRows",v),E=$("#lgE",v),n=0;
+  await c.wait(400);
+  for(var i=0;i<rows.length;i++){var r=rows[i],bad=r[4]==="500";
+    var d=el("div","row"+(bad?" e":""),'<span class="t">'+r[0]+'</span><span class="t">'+r[1]+'</span><span>'+r[2]+'</span><span class="v">'+r[3].replace(/</g,"&lt;")+'</span><span>'+(bad?"500 error":"200 OK")+'</span>');
+    W.appendChild(d);if(W.children.length>17)W.removeChild(W.firstChild);
+    if(bad){n++;E.textContent=n;}
+    await c.wait(bad?1100:650);
+    if(i===7)$("#lgWhy",v).classList.add("in");
+  }
+  await c.wait(300);$("#lgCost",v).classList.add("in");
+};
+
+A.convert=async function(v,c){
+  var W=$("#t4",v),F=$("#f4",v);
+  var files=[["pages/","BasePage.ts"],["pages/cura/","HomePage.ts"],["pages/cura/","LoginPage.ts"],["pages/cura/","AppointmentPage.ts"],["pages/components/","DatePicker.ts"],["pages/guru99/","FileUploadPage.ts"],["test-data/","*.json (6 files)"],["config/","variables.ts"],["fixtures/","lt-fixture.ts"],["tests/","4 spec files"]];
+  var dirs={};files.forEach(function(f,i){if(!dirs[f[0]]){dirs[f[0]]=1;F.appendChild(el("div","dir",f[0]));}var d=el("div","fl",f[1]);d.dataset.i=i;F.appendChild(d);});
+  function line(h){var d=el("div","l",h);W.appendChild(d);if(W.children.length>19)W.removeChild(W.firstChild);return d;}
+  function mark(i){var d=$('.fl[data-i="'+i+'"]',F);if(d)d.classList.add("on");}
+  await c.wait(500);
+  var cmd=line('<span class="g">$</span> ');var sp=el("span");cmd.appendChild(sp);
+  await typeIn(sp,"convert --from katalon --lt-build 112382179",c,45);await c.wait(700);
+  var L=[
+   ['<span class="p">›</span> Fetching build 112382179 from LambdaTest',900],
+   ['  <span class="d">6 tests · 534 commands · Chrome 157 · Windows 11</span>',800],
+   ['<span class="p">›</span> Reading command logs',700],
+   ['  <span class="d">File Upload</span>                         37 commands',380],
+   ['  <span class="d">TC_CURA_BookAppointment_Calendar</span>   175 commands',380],
+   ['  <span class="d">TC_CURA_Login_Parameterization</span>      58 commands',380],
+   ['  <span class="d">TC_CURA_DynamicXPath x3</span>            264 commands',800],
+   ['<span class="p">›</span> Mapping steps to page objects',800,[0,1,2,3]],
+   ['  <span class="y">Manual_datepicker</span> keyword  →  DatePicker component',900,[4]],
+   ['  guru99 upload page  →  FileUploadPage',700,[5]],
+   ['<span class="p">›</span> Writing test data, config and fixture',800,[6,7,8]],
+   ['<span class="p">›</span> Writing specs, original test names kept',800,[9]],
+   ['<span class="p">›</span> Running on LambdaTest with 6 workers',1200],
+   ['  <span class="g">✓</span> File Upload                          6s',300],
+   ['  <span class="g">✓</span> TC_CURA_BookAppointment_Calendar    12s',300],
+   ['  <span class="g">✓</span> TC_CURA_Login_Parameterization - John Doe  7s',300],
+   ['  <span class="g">✓</span> TC_CURA_DynamicXPath - Medicare      8s',300],
+   ['  <span class="g">✓</span> TC_CURA_DynamicXPath - Medicaid      7s',300],
+   ['  <span class="g">✓</span> TC_CURA_DynamicXPath - None          7s',900],
+   ['<span class="g">6 passed</span> · build 112384971 · migration-report.html',0]
+  ];
+  for(var i=0;i<L.length;i++){line(L[i][0]);if(L[i][2])L[i][2].forEach(mark);await c.wait(L[i][1]);}
+};
+
+A.code=async function(v,c){
+  var G=$("#g5",v);var map={A:"cA",F:"cF",W:"cW",E:"cE",O:"cO"};
+  await c.wait(300);
+  for(var i=0;i<SEQ.length;i++){G.appendChild(el("i",map[SEQ[i]]));await c.wait(70);}
+  await c.wait(500);
+  var lns=$$("#c5 .ln",v);
+  for(var j=0;j<lns.length;j++){lns[j].classList.add("in");await c.wait(260);}
+  await c.wait(400);$("#f5",v).classList.add("in");
+};
+
+A.structure=async function(v,c){
+  var rows=$$("#m6 .row",v);await c.wait(400);
+  for(var i=0;i<rows.length;i++){rows[i].classList.add("in");await c.wait(1100);}
+};
+
+A.hard=async function(v,c){
+  var tabs=$$(".tab",v),scenes=$$(".scene",v);
+  function on(i){tabs.forEach(function(t,k){t.classList.toggle("on",k===i)});scenes.forEach(function(s,k){s.classList.toggle("on",k===i)});}
+  var G=$("#dpG",v),H=$("#dpH",v),Ht=$("#dpHt",v),In=$("#dpIn",v),S=$$("#dpS div",v);
+  function grid(cols,items,cls){G.style.gridTemplateColumns="repeat("+cols+",1fr)";G.innerHTML="";items.forEach(function(x){var s=el("span",(cls&&cls(x))||"",String(x));G.appendChild(s);});}
+  function days(){var a=[];for(var i=0;i<6;i++)a.push("");for(var d=1;d<=30;d++)a.push(d);return a;}
+  async function clickHdr(){H.classList.add("click");await c.wait(500);H.classList.remove("click");}
+  async function clickCell(txt){var s=$$("span",G).filter(function(x){return x.textContent===String(txt)})[0];if(s)s.classList.add("click");await c.wait(650);}
+  for(;;){
+    /* scene 0: datepicker */
+    on(0);In.textContent="dd/mm/yyyy";S.forEach(function(s){s.classList.remove("in")});
+    Ht.textContent="November 2026";grid(7,days());await c.wait(1100);
+    S[0].classList.add("in");await c.wait(700);
+    await clickHdr();Ht.textContent="2026";grid(4,["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]);S[1].classList.add("in");await c.wait(900);
+    await clickHdr();Ht.textContent="2020-2029";grid(4,[2019,2020,2021,2022,2023,2024,2025,2026,2027,2028,2029,2030],function(x){return (x===2019||x===2030)?"mut":""});S[2].classList.add("in");await c.wait(900);
+    await clickCell(2026);S[3].classList.add("in");Ht.textContent="2026";grid(4,["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]);await c.wait(700);
+    await clickCell("Nov");S[4].classList.add("in");Ht.textContent="November 2026";grid(7,days());await c.wait(700);
+    await clickCell(25);S[5].classList.add("in");await c.wait(300);In.textContent="25/11/2026";S[6].classList.add("in");
+    await c.wait(2600);
+    /* scene 1: radio */
+    on(1);var rb=$$("#rg .rb",v),M=$("#rgMsg",v);rb.forEach(function(r){r.className="rb"});M.innerHTML="";await c.wait(900);
+    rb[1].classList.add("ring");M.appendChild(el("div","","<span class='pill n'>1</span> native click on Medicaid"));await c.wait(1300);
+    M.appendChild(el("div","","<span class='pill warn'>2</span> still unchecked: the click did not register"));await c.wait(1500);
+    M.appendChild(el("div","","<span class='pill n'>3</span> scroll into view, JS click"));await c.wait(1000);
+    rb[1].classList.remove("ring");rb[1].classList.add("chk");M.appendChild(el("div","","<span class='pill ok'>4</span> checked, test continues"));
+    await c.wait(2800);
+    /* scene 2: dynamic xpath */
+    on(2);var V=$("#xpV",v),R=$("#xpR",v);R.innerHTML="";V.textContent="${program}";await c.wait(1100);
+    var progs=["Medicare","Medicaid","None"];
+    for(var p=0;p<3;p++){V.textContent=progs[p];await c.wait(800);var r=el("div","xr fade",'<span>TC_CURA_DynamicXPath - '+progs[p]+'</span><span class="pill ok">passed · '+[8,7,7][p]+'s</span>');R.appendChild(r);await c.wait(30);r.classList.add("in");await c.wait(1200);}
+    await c.wait(2400);
+  }
+};
+
+A.failure=async function(v,c){
+  var N=$("#nt",v);
+  function req(u,st,cls){var d=el("div","nr",'<span style="color:'+(cls==="bad"?"var(--bad)":cls==="ab"?"var(--soft)":"var(--ink)")+'">'+u+'</span><span class="st"><span class="pill '+(cls==="bad"?"bad":cls==="ab"?"n":"ok")+'">'+st+'</span></span>');N.appendChild(d);if(N.children.length>5)N.removeChild(N.firstChild);}
+  await c.wait(600);
+  req("demo.guru99.com/test/upload/","200");await c.wait(900);
+  req("cdn.guru99.com/.../jquery.min.js","unreachable","bad");await c.wait(1400);
+  $("#s8a",v).classList.add("in");await c.wait(2400);
+  $("#s8b",v).classList.add("in");await c.wait(1800);
+  N.innerHTML="";req("demo.guru99.com/test/upload/","200");await c.wait(700);
+  req("code.jquery.com/jquery-1.12.4.min.js","200 routed");await c.wait(700);
+  req("googletagmanager.com/...","aborted","ab");await c.wait(500);
+  $("#sk",v).style.display="none";$("#fm",v).classList.add("on");await c.wait(1100);
+  $("#fmF",v).textContent="Dummy file.txt";await c.wait(900);
+  $("#fmC",v).classList.add("on");await c.wait(900);
+  $("#s8c",v).classList.add("in");
+};
+
+A.commands=async function(v,c){
+  var C=$("#c9",v),max=175;
+  TESTS.forEach(function(t){var r=el("div","r",'<span class="nm">'+t.n+'</span><div class="bars"><div class="bar bk"><span>'+t.kc+'</span></div><div class="bar bp"><span>'+t.pc+'</span></div></div><span class="pc">▼ '+Math.round((1-t.pc/t.kc)*100)+'%</span>');C.appendChild(r);});
+  await c.wait(400);
+  var rs=$$(".r",C);
+  for(var i=0;i<rs.length;i++){var t=TESTS[i];$(".bk",rs[i]).style.width=(t.kc/max*82)+"%";await c.wait(500);}
+  await c.wait(400);
+  for(var j=0;j<rs.length;j++){var u=TESTS[j];$(".bp",rs[j]).style.width=(u.pc/max*82)+"%";$(".pc",rs[j]).style.opacity=1;await c.wait(450);}
+  await countTo($("#t9n",v),534,154,1600,c);
+  $("#t9p",v).classList.add("in");await c.wait(700);$("#t9x",v).classList.add("in");
+};
+
+A.speed=async function(v,c){
+  var px=650/190;var AX=$("#ax10",v),TK=$("#tk",v),TP=$("#tp",v),PH=$("#ph",v),PT=$("#phT",v);
+  [0,30,60,90,120,150,180].forEach(function(s){var sp=el("span","",s+"s");sp.style.left=(s*px)+"px";AX.appendChild(sp);});
+  TK.style.width=TP.style.width=(190*px)+"px";
+  TK.style.backgroundSize=TP.style.backgroundSize="";
+  var koff=[9,40,81,102,135,164];
+  var kb=TESTS.map(function(t,i){var b=el("div","bk10");b.style.left=(koff[i]*px)+"px";b.style.top=(i%2?30:4)+"px";TK.appendChild(b);return b;});
+  var pb=TESTS.map(function(t,i){var b=el("div","bp10");b.style.left="0px";b.style.top=(4+i*27)+"px";TP.appendChild(b);return b;});
+  var dk=el("div","done","Katalon done · 185s");dk.style.left=(150*px)+"px";dk.style.top="60px";TK.appendChild(dk);
+  var dp=el("div","done","Playwright done · 27s");dp.style.left=(27*px+8)+"px";dp.style.top="68px";TP.appendChild(dp);
+  var mk=el("div","");mk.style.cssText="position:absolute;top:0;bottom:0;width:2px;background:var(--ok);opacity:0;transition:opacity .4s;left:"+(27*px)+"px";TP.appendChild(mk);
+  var base=120+22;
+  await c.wait(600);
+  for(var s=0;s<=185;s++){
+    PH.style.left=(base+s*px)+"px";PT.textContent=s+"s";
+    for(var i=0;i<6;i++){var t=TESTS[i];var kk=Math.max(0,Math.min(t.kd,s-koff[i]));kb[i].style.width=(kk*px)+"px";var pp=Math.min(t.pd,s);pb[i].style.width=(pp*px)+"px";}
+    if(s===27){dp.style.opacity=1;mk.style.opacity=1;$("#s10a",v).classList.add("in");}
+    if(s===60)$("#s10b",v).classList.add("in");
+    await c.wait(s<30?110:45);
+  }
+  dk.style.opacity=1;$("#s10c",v).classList.add("in");
+};
+
+A.grid=async function(v,c){
+  var L=$$("#c11 .ln",v),S=$$(".s11 .st",v),V=$("#vid",v);
+  await c.wait(300);
+  for(var i=0;i<L.length;i++){L[i].classList.add("in");await c.wait(130);}
+  await c.wait(600);
+  function hl(a,b){L.forEach(function(l,k){l.classList.toggle("hl",k>=a&&k<=b)});}
+  hl(0,8);S[0].classList.add("in");await c.wait(2200);
+  hl(9,10);S[1].classList.add("in");await c.wait(1600);
+  hl(11,11);V.classList.add("in");await c.wait(2400);S[2].classList.add("in");await c.wait(1800);
+  hl(12,13);S[3].classList.add("in");await c.wait(2400);hl(-1,-1);
+};
+
+A.faq=async function(v,c){
+  var Q=$("#faqQ",v),D=$$("#faqL details",v),N=$("#faqN",v);
+  Q.addEventListener("input",function(){var q=Q.value.trim().toLowerCase(),n=0;D.forEach(function(d){var m=!q||d.textContent.toLowerCase().indexOf(q)>-1;d.style.display=m?"":"none";if(m)n++;});N.style.display=n?"none":"block";});
+  Q.addEventListener("keydown",function(e){e.stopPropagation();});
+  D.forEach(function(d){d.addEventListener("toggle",function(){if(d.open)D.forEach(function(o){if(o!==d)o.open=false;});});});
+  await c.wait(200);
+  for(var i=0;i<D.length;i++){D[i].classList.add("in");await c.wait(140);}
+};
+
+A.next=async function(v,c){
+  var F=$$(".fade",v);await c.wait(300);
+  for(var i=0;i<F.length;i++){F[i].classList.add("in");await c.wait(650);}
+};
+
+/* ---------- shell ---------- */
+var chapters=$$(".chapter"),rail=$("#rail"),notes=$("#notes"),notesIn=$("#notesIn"),where=$("#where"),wipe=$("#wipe");
+var saved=chapters.map(function(ch){return $(".visual",ch).innerHTML;});
+var cur=-1,ctx=null,busy=false;
+chapters.forEach(function(ch,i){
+  var b=el("button","",'<span>'+String(i+1).padStart(2,"0")+'</span><span class="lbl">'+ch.dataset.short+'</span>');
+  b.title=ch.dataset.short;b.setAttribute("aria-label","Chapter "+(i+1)+": "+ch.dataset.short);
+  b.addEventListener("click",function(){go(i);});rail.appendChild(b);
+});
+function fit(){
+  var vp=$("#viewport");var w=vp.clientWidth,h=vp.clientHeight;
+  var s=Math.min((w-40)/1200,(h-16)/640,1.25);
+  $$(".canvas").forEach(function(cv){cv.style.transform="translate(-50%,-50%) scale("+s+")";});
+}
+function start(i){
+  if(ctx)ctx.stop();
+  var v=$(".visual",chapters[i]);v.innerHTML=saved[i];
+  var r=el("button","replay",'<svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M2.5 8a5.5 5.5 0 1 0 1.8-4.1M2.5 2v3.5H6"/></svg>Replay');
+  r.addEventListener("click",function(){start(i);});v.appendChild(r);
+  ctx=new Ctx();var fn=A[v.dataset.anim];if(fn)fn(v,ctx);
+}
+function show(i){
+  if(ctx){ctx.stop();ctx=null;}
+  if(cur>-1){$(".visual",chapters[cur]).innerHTML=saved[cur];}
+  cur=i;
+  chapters.forEach(function(ch,k){ch.classList.toggle("on",k===i);});
+  $$("button",rail).forEach(function(b,k){b.classList.toggle("on",k===i);if(k<=i)b.classList.add("seen");});
+  notesIn.innerHTML=$(".note",chapters[i]).innerHTML;
+  where.innerHTML="<b>"+String(i+1).padStart(2,"0")+"</b> / "+chapters.length+" · "+chapters[i].dataset.short;
+  $("#prevBtn").disabled=i===0;$("#nextBtn").disabled=i===chapters.length-1;
+  $("#prevBtn").style.opacity=i===0?.4:1;$("#nextBtn").style.opacity=i===chapters.length-1?.4:1;
+  var id=chapters[i].id;if(location.hash!=="#"+id)history.replaceState(null,"","#"+id);
+  fit();start(i);
+}
+function go(i){
+  if(i<0||i>=chapters.length||i===cur||busy)return;
+  if(!wipe.animate){show(i);return;}
+  busy=true;
+  var a=wipe.animate([{clipPath:"inset(0 100% 0 0)"},{clipPath:"inset(0 0 0 0)"}],{duration:300,easing:"cubic-bezier(.6,0,.4,1)",fill:"forwards"});
+  a.onfinish=function(){show(i);var b=wipe.animate([{clipPath:"inset(0 0 0 0)"},{clipPath:"inset(0 0 0 100%)"}],{duration:360,easing:"cubic-bezier(.6,0,.4,1)",fill:"forwards"});b.onfinish=function(){busy=false;};};
+}
+function idx(){var h=decodeURIComponent(location.hash.slice(1));for(var i=0;i<chapters.length;i++)if(chapters[i].id===h)return i;return -1;}
+window.addEventListener("hashchange",function(){var i=idx();if(i>-1&&i!==cur)go(i);});
+document.addEventListener("click",function(e){var a=e.target.closest&&e.target.closest('a[href^="#"]');if(!a)return;var h=a.getAttribute("href").slice(1);for(var i=0;i<chapters.length;i++)if(chapters[i].id===h){e.preventDefault();go(i);return;}});
+document.addEventListener("keydown",function(e){
+  if(e.target&&(e.target.tagName==="INPUT"||e.target.tagName==="TEXTAREA"))return;
+  if(e.key==="ArrowRight"||e.key==="PageDown"){e.preventDefault();go(cur+1);}
+  else if(e.key==="ArrowLeft"||e.key==="PageUp"){e.preventDefault();go(cur-1);}
+  else if(e.key==="Home"){go(0);}else if(e.key==="End"){go(chapters.length-1);}
+  else if(e.key==="r"||e.key==="R"){start(cur);}
+  else if(e.key==="d"||e.key==="D"){$("#detailsBtn").click();}
+});
+$("#prevBtn").addEventListener("click",function(){go(cur-1);});
+$("#nextBtn").addEventListener("click",function(){go(cur+1);});
+$("#detailsBtn").addEventListener("click",function(){var o=!notes.classList.contains("open");notes.classList.toggle("open",o);this.classList.toggle("on",o);this.setAttribute("aria-pressed",String(o));fit();setTimeout(fit,320);});
+$("#presentBtn").addEventListener("click",function(){
+  var d=document;
+  if(!d.fullscreenElement){var p=d.documentElement.requestFullscreen&&d.documentElement.requestFullscreen();if(p&&p.catch)p.catch(function(){});}
+  else{var q=d.exitFullscreen&&d.exitFullscreen();if(q&&q.catch)q.catch(function(){});}
+});
+document.addEventListener("fullscreenchange",function(){$("#presentBtn span").textContent=document.fullscreenElement?"Exit":"Present";setTimeout(fit,50);});
+window.addEventListener("resize",fit);
+var first=idx();show(first>-1?first:0);
+})();
+</script>
+</body>
+</html>
